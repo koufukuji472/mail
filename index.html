@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>廣福寺 法要予約フォーム</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 15px; background-color: #f8f9fa; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        h2 { border-left: 5px solid #8e44ad; padding-left: 10px; color: #4a148c; font-size: 1.1em; margin-top: 0; }
+        label { display: block; margin: 15px 0 5px; font-weight: bold; font-size: 0.9em; }
+        input[type="text"], select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+        .btn-group input[type="radio"], .btn-group input[type="checkbox"] { display: none; }
+        .btn-group label { padding: 10px 12px; background: #f0f0f0; border-radius: 6px; cursor: pointer; flex: 1; text-align: center; margin: 0; font-size: 0.85em; transition: 0.2s; border: 1px solid #ddd; }
+        .btn-group input:checked + label { background: #8e44ad; color: white; border-color: #8e44ad; }
+        .houji-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; background: #fef7ff; padding: 10px; border-radius: 8px; }
+        .hidden { display: none; }
+        .hint-box { background: #fffde7; border-left: 5px solid #fbc02d; padding: 15px; margin-top: 15px; font-size: 0.85em; border-radius: 0 8px 8px 0; }
+        .hint-box ul { padding-left: 18px; margin: 5px 0 10px; }
+        .submit-btn { display: block; width: 100%; padding: 18px; background: #06C755; color: white; text-align: center; border-radius: 50px; font-weight: bold; font-size: 1.1em; margin: 10px 0 20px; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(6,199,85,0.3); transition: transform 0.1s; }
+        .submit-btn:active { transform: scale(0.98); }
+        .submit-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+        #status-message { display: none; padding: 15px; margin: 10px 0; border-radius: 8px; text-align: center; font-weight: bold; font-size: 0.95em; }
+        .success-bg { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .error-bg { background-color: #ffeeb2; color: #b71c1c; border: 1px solid #ffccbc; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div class="card">
+        <h2>基本情報</h2>
+        <label>屋号（カタカナ）</label>
+        <input type="text" id="yago" placeholder="例：コウフクジ">
+        <label>お名前 <span style="color:red">*</span></label>
+        <input type="text" id="name" required>
+        <label>連絡先（電話番号） <span style="color:red">*</span></label>
+        <input type="text" id="tel" placeholder="例：090-1234-5678" required>
+        <label>お住まいの地域</label>
+        <div class="btn-group">
+            <input type="radio" name="area" id="a1" value="小安"><label for="a1">小安</label>
+            <input type="radio" name="area" id="a2" value="釜谷"><label for="a2">釜谷</label>
+            <input type="radio" name="area" id="a3" value="汐首"><label for="a3">汐首</label>
+            <input type="radio" name="area" id="a4" value="瀬田来"><label for="a4">瀬田来</label>
+            <input type="radio" name="area" id="a5" value="函館"><label for="a5">函館</label>
+            <input type="radio" name="area" id="a6" value="その他"><label for="a6">その他</label>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>1. 法要の内容</h2>
+        <div class="btn-group">
+            <input type="radio" name="type" id="t1" value="初七日・四十九日など" onclick="toggleHouji(false)"><label for="t1">初七日・四十九日など</label>
+            <input type="radio" name="type" id="t2" value="法事" onclick="toggleHouji(true)"><label for="t2">法事</label>
+        </div>
+        <div id="houji-options" class="hidden" style="margin-top:10px;">
+            <label>供養の対象（3組まで入力可）</label>
+            <!-- 1組目 -->
+            <div class="houji-row">
+                <select class="kaiki">
+                    <option value="">○回忌を選択</option>
+                    <option value="1">1周忌</option>
+                    <option value="3">3回忌</option>
+                    <option value="7">7回忌</option>
+                    <option value="13">13回忌</option>
+                    <option value="17">17回忌</option>
+                    <option value="23">23回忌</option>
+                    <option value="27">27回忌</option>
+                    <option value="33">33回忌</option>
+                    <option value="37">37回忌</option>
+                    <option value="50">50回忌</option>
+                </select>
+                <select class="ninzu"><option value="">人数</option><option>1</option><option>2</option><option>3</option><option>0</option></select>名
+            </div>
+            <!-- 2組目 -->
+            <div class="houji-row">
+                <select class="kaiki"><option value="">○回忌を選択</option><option value="1">1周忌</option><option value="3">3回忌</option><option value="7">7回忌</option><option value="13">13回忌</option><option value="17">17回忌</option><option value="23">23回忌</option><option value="27">27回忌</option><option value="33">33回忌</option><option value="37">37回忌</option><option value="50">50回忌</option></select>
+                <select class="ninzu"><option value="">人数</option><option>1</option><option>2</option><option>3</option><option>0</option></select>名
+            </div>
+            <!-- 3組目 -->
+            <div class="houji-row">
+                <select class="kaiki"><option value="">○回忌を選択</option><option value="1">1周忌</option><option value="3">3回忌</option><option value="7">7回忌</option><option value="13">13回忌</option><option value="17">17回忌</option><option value="23">23回忌</option><option value="27">27回忌</option><option value="33">33回忌</option><option value="37">37回忌</option><option value="50">50回忌</option></select>
+                <select class="ninzu"><option value="">人数</option><option>1</option><option>2</option><option>3</option><option>0</option></select>名
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>2. 希望の場所</h2>
+        <div class="btn-group">
+            <input type="radio" name="place" id="p1" value="家族葬ホール" onclick="togglePlace(false)"><label for="p1">家族葬ホール</label>
+            <input type="radio" name="place" id="p2" value="自宅" onclick="togglePlace(false)"><label for="p2">自宅</label>
+            <input type="radio" name="place" id="p3" value="その他" onclick="togglePlace(true)"><label for="p3">その他</label>
+        </div>
+        <div id="place-other" class="hidden" style="margin-top:10px;">
+            <input type="text" id="place-detail" placeholder="場所を入力してください">
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>3. 会食（お斎）の希望</h2>
+        <div class="btn-group">
+            <input type="radio" name="food" id="f1" value="お弁当を注文したい"><label for="f1">お弁当注文</label>
+            <input type="radio" name="food" id="f2" value="場所のみ利用（持込）"><label for="f2">場所のみ利用</label>
+            <input type="radio" name="food" id="f3" value="会食なし"><label for="f3">会食なし</label>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>4. お供え物の準備</h2>
+        <div class="btn-group">
+            <input type="radio" name="kumotsu" id="k1" value="お寺にお任せ" onclick="toggleKumotsu(false)"><label for="k1">お寺にお任せ</label>
+            <input type="radio" name="kumotsu" id="k2" value="自分たちで用意" onclick="toggleKumotsu(true)"><label for="k2">自分たちで用意</label>
+        </div>
+        <div id="kumotsu-hint" class="hint-box hidden">
+            <strong>■ お供えを用意する際のチェック項目</strong>
+            <ul>
+                <li>お花（1対）</li>
+                <li>果物：盛り合わせなど</li>
+                <li>積み団子（1対）</li>
+                <li>お供え餅：仏様の人数分ではなく1つでも可</li>
+                <li>お菓子：個包装のものが分けやすく喜ばれます</li>
+                <li>霊供膳：仏様の人数分ではなく1つでも可</li>
+            </ul>
+            <strong>■ 地域特有・任意の品（下海岸文化）</strong>
+            <ul>
+                <li>さん餅（10本）：あの世との橋渡しと言われます</li>
+                <li>べこ餅・鯨餅：地域の法要によく供えられます</li>
+                <li>麦饅頭：控えめにする方も増えています</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>5. その他オプション</h2>
+        <div class="btn-group">
+            <input type="checkbox" name="opt" id="o1" value="塔婆を頼む"><label for="o1">塔婆を頼む</label>
+            <input type="checkbox" name="opt" id="o2" value="会場見学"><label for="o2">会場見学</label>
+            <input type="checkbox" name="opt" id="o3" value="引き物相談"><label for="o3">引き物相談</label>
+        </div>
+    </div>
+
+    <div class="card">
+        <label>希望の日時（第3希望まで入力可）</label>
+        <textarea id="dates" rows="4" placeholder="例：
+1. 10月10日 11時〜
+2. 10月11日 10時〜
+※その他ご要望があればこちらへ"></textarea>
+        
+        <!-- 送信メッセージ位置の調整 -->
+        <div id="status-message"></div>
+        
+        <button id="main-submit" class="submit-btn" onclick="sendToGAS()">予約内容を送信する</button>
+    </div>
+</div>
+
+<script>
+    function toggleHouji(show) { document.getElementById('houji-options').classList.toggle('hidden', !show); }
+    function togglePlace(show) { document.getElementById('place-other').classList.toggle('hidden', !show); }
+    function toggleKumotsu(show) { document.getElementById('kumotsu-hint').classList.toggle('hidden', !show); }
+    
+    function showMessage(text, isSuccess) {
+        const msgEl = document.getElementById('status-message');
+        msgEl.innerText = text;
+        msgEl.style.display = 'block';
+        msgEl.className = isSuccess ? 'success-bg' : 'error-bg';
+        
+        // メッセージへスクロール
+        msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function sendToGAS() {
+        const btn = document.getElementById('main-submit');
+        const name = document.getElementById('name').value;
+        const tel = document.getElementById('tel').value;
+        
+        if (!name || !tel) {
+            showMessage("「お名前」と「連絡先」は必ず入力してください。", false);
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "送信中...";
+
+        // 詳細データの整理
+        let typeVal = document.querySelector('input[name="type"]:checked')?.value || "未選択";
+        if (typeVal === "法事") {
+            const rows = document.querySelectorAll('.houji-row');
+            let details = "";
+            rows.forEach(row => {
+                const k = row.querySelector('.kaiki').value;
+                const n = row.querySelector('.ninzu').value;
+                if(k && n) {
+                    const unit = (k === "1") ? "周忌" : "回忌";
+                    details += ` [${k}${unit}:${n}名]`;
+                }
+            });
+            if(details) typeVal += details;
+        }
+
+        const placeSelection = document.querySelector('input[name="place"]:checked')?.value || "未選択";
+
+        const data = {
+            yago: document.getElementById('yago').value || "未入力",
+            name: name,
+            tel: tel,
+            area: document.querySelector('input[name="area"]:checked')?.value || "未選択",
+            type: typeVal,
+            place: placeSelection === "その他" ? document.getElementById('place-detail').value || "その他(詳細なし)" : placeSelection,
+            food: document.querySelector('input[name="food"]:checked')?.value || "未選択",
+            kumotsu: document.querySelector('input[name="kumotsu"]:checked')?.value || "未選択",
+            opts: Array.from(document.querySelectorAll('input[name="opt"]:checked')).map(el => el.value).join(', ') || "なし",
+            dates: document.getElementById('dates').value || "未入力"
+        };
+
+        // 指定された最新URL
+        const gasUrl = "https://script.google.com/macros/s/AKfycbydVhYDxh-9jGGc_uxzEwgpoeYTyBddllOyQyigxiebStwjIFUktyVokRd3e3KaafQS/exec";
+
+        fetch(gasUrl, {
+            method: "POST",
+            mode: "no-cors", 
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify(data)
+        })
+        .then(() => {
+            showMessage("送信が完了しました。お寺からの折り返し連絡をお待ちください。", true);
+            // フォームのリセット
+            document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+            document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => el.checked = false);
+            document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+            toggleHouji(false);
+            togglePlace(false);
+            toggleKumotsu(false);
+            btn.disabled = false;
+            btn.innerText = "予約内容を送信する";
+        })
+        .catch(err => {
+            console.error(err);
+            showMessage("通信エラーが発生しました。時間を置いて再度お試しいただくか、直接お電話ください。", false);
+            btn.disabled = false;
+            btn.innerText = "予約内容を送信する";
+        });
+    }
+</script>
+</body>
+</html>
+
